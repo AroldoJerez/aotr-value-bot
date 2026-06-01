@@ -1,0 +1,34 @@
+export function parseTradeMessage(content = "") {
+    const text = String(content).trim();
+
+    const tradeMatch = text.match(/^(.+?)\s+(for|por)\s+(.+)$/i);
+
+    if (tradeMatch) {
+        return {
+            type: "compare",
+            left: splitItems(tradeMatch[1]),
+            right: splitItems(tradeMatch[3])
+        };
+    }
+
+    const items = splitItems(text);
+
+    if (items.length > 1) {
+        return {
+            type: "sum",
+            items
+        };
+    }
+
+    return {
+        type: "single",
+        item: text
+    };
+}
+
+function splitItems(text = "") {
+    return String(text)
+        .split("+")
+        .map(item => item.trim())
+        .filter(Boolean);
+}
